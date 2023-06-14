@@ -9,7 +9,9 @@ const server = http.createServer(async (req, res) => {
 
   for await (const chunk of req) {
     buffers.push(chunk);
+    console.log(chunk);
   }
+
 
   try{
     req.body = JSON.parse(Buffer.concat(buffers).toString());
@@ -19,6 +21,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (method == `GET` && url == "/users") {
+    console.log("Retornando usuários");
     return res
       .setHeader("Content-Type", "application/json")
       .end(JSON.stringify(users));
@@ -31,7 +34,7 @@ const server = http.createServer(async (req, res) => {
       name,
       email,
     });
-
+    console.log(users);
     return res.writeHead(201).end();
   }
   return res.writeHead(404).end();
