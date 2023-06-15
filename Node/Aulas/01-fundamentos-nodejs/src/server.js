@@ -1,36 +1,24 @@
 import http from "node:http";
-import { randomUUID } from "node:crypto";
-import {json} from "./middlewares/json.js";
-import { Database } from "./database.js";
+import { json } from "./middlewares/json.js";
+import { routes } from "./routes.js";
 
-const database = new Database();
-
+//criar o servidor
 const server = http.createServer(async (req, res) => {
   const { method, url } = req;
 
-  await json (req, res)
+  //aguardar o middleware
+  await json(req, res);
 
-  if (method == `GET` && url == "/users") {
-    const users = database.select("users");
-    console.log(database.select("users"));
-    return res.end(JSON.stringify(users));
-  }
+  //procura a rota
+  const route = routes.find( route => (
+    route.method === method && route.path === url
+  ))
 
-  if (method == `POST` && url == "/users") {
-    const { name, email } = req.body;
+  //se existir a rota, execute o handler
+  if(route) return route.handler(req, res)
 
-    const user = {
-      id: randomUUID(),
-      name,
-      email,
-    }
-
-    database.insert("users", user);
-
-    return res.writeHead(201).end();
-  }
-
+  //caso nao exista a rota error 404
   return res.writeHead(404).end();
 });
-
+//escutar o servidor na porta 3333
 server.listen(3333);
