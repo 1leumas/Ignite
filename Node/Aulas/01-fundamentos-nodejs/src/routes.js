@@ -1,27 +1,30 @@
 import { Database } from "./database.js";
 import { randomUUID } from "node:crypto";
+import { buildRoutePath } from "./utils/build-route-path.js";
 
 //criar a database
 const database = new Database();
 
 export const routes = [
+  //get users
   {
     //se o metodo for get e a url for /users, crie uma variavel users
     //e atribua a ela o retorno do metodo select da classe database
     method: "GET",
-    path: "/users",
+    path: buildRoutePath("/users"),
     handler: (req, res) => {
       const users = database.select("users");
       console.log(database.select("users"));
       return res.end(JSON.stringify(users));
     },
   },
+  //post users
   {
     //faca um request no body
     //e crie uma variavel user que recebe o name e o email do body
     //depois armazene na database com o metodo insert, na tabela users, o user
     method: "POST",
-    path: "/users",
+    path: buildRoutePath("/users"),
     handler: (req, res) => {
       const { name, email } = req.body;
 
@@ -36,5 +39,11 @@ export const routes = [
 
       return res.writeHead(201).end(); //retornar o status 201
     },
+  },
+  //delete users
+  {
+    method: `DELETE`,
+    path: buildRoutePath(`/users/:id`),
+    handler: (req, res) => {},
   },
 ];
