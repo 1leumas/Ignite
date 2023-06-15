@@ -15,16 +15,19 @@ export class Database {
       });
   }
 
+  //persistir os dados
   #persist() {
     fs.writeFile(databasePath, JSON.stringify(this.#database));
   }
 
+  // listar usuarios
   select(table) {
     const data = this.#database[table] ?? [];
 
     return data;
   }
 
+  //inserir usuario
   insert(table, data) {
     if (Array.isArray(this.#database[table])) {
       this.#database[table].push(data);
@@ -36,11 +39,22 @@ export class Database {
     return data;
   }
 
+  //deletar usuario
   delete(table, id) {
     const rowIndex = this.#database[table].findIndex((row) => row.id === id);
 
     if (rowIndex > -1) {
       this.#database[table].splice(rowIndex, 1);
+      this.#persist();
+    }
+  }
+
+  //atualizar usuario
+  update(table, id, data) {
+    const rowIndex = this.#database[table].findIndex((row) => row.id === id);
+
+    if (rowIndex > -1) {
+      this.#database[table][rowIndex] = {id, ...data}
       this.#persist();
     }
   }
