@@ -11,12 +11,18 @@ const server = http.createServer(async (req, res) => {
   await json(req, res);
 
   //procura a rota
-  const route = routes.find( route => (
-    route.method === method && route.path === url
-  ))
+  const route = routes.find(
+    (route) => route.method === method && route.path.test(url)
+  );
 
   //se existir a rota, execute o handler
-  if(route) return route.handler(req, res)
+  if (route) {
+    const routeParams = req.url.match(route.path);
+
+    console.log(routeParams)
+
+    return route.handler(req, res);
+  }
 
   //caso nao exista a rota error 404
   return res.writeHead(404).end();
